@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/maven_gem
+lib/maven_gem.rb
+test/test_maven_gem.rb
