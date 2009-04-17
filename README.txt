@@ -1,48 +1,40 @@
 = MavenGem
 
-* FIX (url)
+* http://www.jruby.org
 
 == DESCRIPTION:
 
-FIX (describe your package)
+MavenGem is a tool, library, and gem plugin to install any Maven-published
+Java library as though it were a gem.
 
-== FEATURES/PROBLEMS:
+== FEATURES:
 
-* FIX (list of features or problems)
+* First release!
+* maven_gem executable to install
+** use pom file location, pom file URL, or group ID, artifact ID, and version
+* gem plugin for "maven" command, same params (RubyGems 1.3.2+)
+
+== PROBLEMS:
+
+* No dependency tracking using Maven dependencies
+* No ability to output a .gem file rather than install
+* No support for gems with more than one group ID
+* No support for gems with alphanumeric version numbers
+* No tests, minimal docs :)
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+maven_gem <pom url>
+maven_gem <pom file>
+maven_gem <group ID> <artifact ID> <version>
+
+or "gem maven" with same args (RubyGems 1.3.2+)
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+JRuby 1.2.0 or higher. RubyGems 1.3.2 or higher for gem plugin.
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+gem install maven_gem
 
-== LICENSE:
-
-(The MIT License)
-
-Copyright (c) 2008 FIX
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

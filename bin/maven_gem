@@ -1,0 +1,20 @@
+#!/usr/bin/env jruby
+require 'rubygems'
+require 'mvn_gem'
+
+def maven_gem_error
+  raise "usage:
+\tmaven_gem install <group id> <artifact id> <version>
+\tmaven_gem install <pom URL>
+\tmaven_gem install <pom file>"
+end
+
+maven_gem_error unless ARGV.length >= 1
+
+case ARGV.shift
+when 'install'
+  maven_gem_error unless ARGV.length >= 1
+  MavenGem.install *ARGV
+else
+  maven_gem_error
+end
