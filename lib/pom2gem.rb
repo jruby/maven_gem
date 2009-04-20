@@ -19,6 +19,50 @@ module MavenGem
       pom_doc = REXML::Document.new(Net::HTTP.get(uri))
       from_doc(pom_doc, options)
     end
+    
+    # Unless the maven version string is a valid Gem version string create a substitute
+    # gem version string by dividing the maven version string into it's numeric elements
+    # and joining them back together with '.' characters.
+    # 
+    # The string 'alpha' in a maven version string is converted to '0'.
+    # The string 'beta' in a maven version string is converted to '1'.
+    # 
+    # In general gem versions strings need to either be an Integer or start with a 
+    # digit and a '.'.
+    # 
+    # For example the flying saucer core-renderer jar that uses itext to generate a
+    # pdf from styled xhtml input has a version string of "R8pre2". 
+    # 
+    # Installing this jar:
+    # 
+    #   jruby -S gem maven org/xhtmlrenderer core-renderer R8pre2
+    # 
+    # results in:
+    # 
+    #   Successfully installed core-renderer-8.2-java
+    #   1 gem installed
+    # 
+    #   jruby -S gem list core-renderer
+    #   
+    #   *** LOCAL GEMS ***
+    #   
+    #   core-renderer (8.2)
+    # 
+    # In addition the following constants are created in the new maven gem:
+    # 
+    #   CoreRenderer::VERSION         # => "8.2"
+    #   CoreRenderer::MAVEN_VERSION   # => "R8pre2"
+    # 
+    def self.maven_to_gem_version(maven_version)
+      maven_version = maven_version.gsub(/alpha/, '0')
+      maven_version = maven_version.gsub(/beta/, '1')
+      maven_numbers = maven_version.gsub(/\D+/, '.').split('.').find_all { |i| i.length > 0 }
+      if maven_numbers.empty?
+        '0.0.0'
+      else
+        maven_numbers.join('.')
+      end
+    end
 
     def self.from_doc(pom_doc, options = {})
       begin
@@ -29,6 +73,8 @@ module MavenGem
         artifact = nil
         group = nil
         version = nil
+        maven_version = nil
+        titleized_classname = nil
 
         puts "Processing POM" if options[:verbose]
         pom_doc.elements.each("/project/*") do |element|
@@ -36,11 +82,13 @@ module MavenGem
           when "artifactId"
             spec.name = element.text
             artifact = element.text
+            titleized_classname = artifact.chomp('.rb').split('-').collect { |e| e.capitalize }.join
           when "groupId"
             group = element.text
           when "version"
-            spec.version = element.text
-            version = element.text
+            maven_version = element.text
+            version = MavenGem::PomSpec.maven_to_gem_version(maven_version)
+            spec.version = version
           when "description"
             spec.description = element.text
           when "dependencies"
@@ -78,7 +126,11 @@ module MavenGem
         jar_contents = Net::HTTP.get(uri)
         File.open("#{gem_dir}/lib/#{jar_file}", 'w') {|f| f.write(jar_contents)}
 
-        ruby_file_contents = <<END
+        ruby_file_contents = <<HEREDOC
+class #{titleized_classname}
+  VERSION = '#{version}'
+  MAVEN_VERSION = '#{maven_version}'   
+end
 begin
   require 'java'
   require File.dirname(__FILE__) + '/#{jar_file}'
@@ -86,7 +138,7 @@ rescue LoadError
   puts 'JAR-based gems require JRuby to load. Please visit www.jruby.org.'
   raise
 end
-END
+HEREDOC
         ruby_file = "#{gem_dir}/lib/#{artifact}.rb"
         puts "Writing #{ruby_file}" if options[:verbose]
         File.open(ruby_file, 'w') do |file|
