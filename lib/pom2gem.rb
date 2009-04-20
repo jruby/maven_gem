@@ -127,7 +127,7 @@ module MavenGem
         File.open("#{gem_dir}/lib/#{jar_file}", 'w') {|f| f.write(jar_contents)}
 
         ruby_file_contents = <<HEREDOC
-class #{titleized_classname}
+module #{titleized_classname}
   VERSION = '#{version}'
   MAVEN_VERSION = '#{maven_version}'   
 end
