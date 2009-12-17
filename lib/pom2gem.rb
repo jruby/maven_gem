@@ -80,7 +80,6 @@ module MavenGem
         pom_doc.elements.each("/project/*") do |element|
           case element.name
           when "artifactId"
-            spec.name = element.text
             artifact = element.text
             titleized_classname = artifact.chomp('.rb').split('-').collect { |e| e.capitalize }.join
           when "groupId"
@@ -93,10 +92,11 @@ module MavenGem
             spec.description = element.text
           when "dependencies"
             element.elements.each do |dependency|
+              dep_group = dependency.elements[1].text
               dep_artifact = dependency.elements[2].text
               dep_version = dependency.elements[3].text
 
-              new_dep = Gem::Dependency.new(dep_artifact, "=#{dep_version}")
+              new_dep = Gem::Dependency.new("#{dep_group}.#{dep_artifact}", "=#{dep_version}")
               spec.dependencies << new_dep
             end
           when "developers"
@@ -109,8 +109,9 @@ module MavenGem
         end
 
         group_dir = group.gsub('.', '/')
+        spec.name = "#{group}.#{artifact}"
         spec.lib_files << "#{artifact}.rb"
-        gem_name = "#{artifact}-#{version}"
+        gem_name = "#{spec.name}-#{version}"
         gem_dir = "#{gem_name}.#{$$}"
         remote_dir = "#{group_dir}/#{artifact}/#{version}"
         jar_file = "#{gem_name}.jar"
