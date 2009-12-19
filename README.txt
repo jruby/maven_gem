@@ -17,7 +17,6 @@ Java library as though it were a gem.
 == PROBLEMS:
 
 * No dependency tracking using Maven dependencies
-* No ability to output a .gem file rather than install
 * No support for gems with more than one group ID
 * No support for gems with alphanumeric version numbers
 * No tests, minimal docs :)

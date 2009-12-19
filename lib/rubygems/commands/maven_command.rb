@@ -1,5 +1,5 @@
 require 'rubygems/command'
-require 'mvn_gem'
+require 'maven_gem'
 
 class Gem::Commands::MavenCommand < Gem::Command
 

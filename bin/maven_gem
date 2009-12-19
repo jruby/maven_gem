@@ -1,12 +1,13 @@
 #!/usr/bin/env jruby
-require 'rubygems'
-require 'mvn_gem'
+
+$:.unshift(File.dirname(__FILE__) + '/../lib')
+require 'maven_gem'
 
 def maven_gem_error
   raise "usage:
-\tmaven_gem install <group id> <artifact id> <version>
-\tmaven_gem install <pom URL>
-\tmaven_gem install <pom file>"
+\tmaven_gem install|build <group id> <artifact id> <version>
+\tmaven_gem install|build <pom URL>
+\tmaven_gem install|build <pom file>"
 end
 
 maven_gem_error unless ARGV.length >= 1
@@ -15,6 +16,9 @@ case ARGV.shift
 when 'install'
   maven_gem_error unless ARGV.length >= 1
   MavenGem.install *ARGV
+when 'build'
+  maven_gem_error unless ARGV.length >= 1
+  MavenGem.build *ARGV
 else
   maven_gem_error
 end
