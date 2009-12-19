@@ -7,6 +7,7 @@ describe MavenGem do
       lambda { 
         MavenGem.build('ant', 'ant', '1.6.5')
       }.should_not raise_error
+      File.exist?('ant.ant-1.6.5-java.gem').should be_true
       ensure
         require 'fileutils'
         FileUtils.rm_f('ant.ant-1.6.5-java.gem')

@@ -115,12 +115,7 @@ module MavenGem
     def self.create_files(specification, pom, options = {})
       gem_dir = create_tmp_directories(pom, options)
 
-      ruby_file = "#{gem_dir}/lib/#{pom.lib_name}"
-      puts "Writing #{ruby_file}" if options[:verbose]
-      File.open(ruby_file, 'w') do |file|
-        file.write(ruby_file_contents(ruby_file, pom))
-      end
-
+      ruby_file_contents(gem_dir, pom, options)
       jar_file_contents(gem_dir, pom, options)
       metadata_contents(gem_dir, specification, pom, options)
       gem_contents(gem_dir, pom, options)
@@ -138,9 +133,9 @@ module MavenGem
       gem_dir
     end
 
-    def self.ruby_file_contents(ruby_file, pom)
+    def self.ruby_file_contents(gem_dir, pom, options = {})
       titleized_classname = pom.artifact.split('-').collect { |e| e.capitalize }.join
-ruby_file_contents = <<HEREDOC
+      ruby_file_content = <<HEREDOC
 module #{titleized_classname}
   VERSION = '#{pom.version}'
   MAVEN_VERSION = '#{pom.maven_version}'
@@ -153,6 +148,12 @@ rescue LoadError
   raise
 end
 HEREDOC
+
+      ruby_file = "#{gem_dir}/lib/#{pom.lib_name}"
+      puts "Writing #{ruby_file}" if options[:verbose]
+      File.open(ruby_file, 'w') do |file|
+        file.write(ruby_file_content)
+      end
     end
 
     def self.jar_file_contents(gem_dir, pom, options = {})

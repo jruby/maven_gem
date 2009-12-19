@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/../spec_helper'
+require 'fileutils'
 
 describe MavenGem::PomSpec do
 
@@ -132,9 +133,28 @@ describe MavenGem::PomSpec do
         lambda {
           MavenGem::PomSpec.create_gem(spec, pom)
         }.should_not raise_error
+        File.exist?('ant.ant-1.6.5-java.gem').should be_true
       ensure
-        require 'fileutils'
         FileUtils.rm_f('ant.ant-1.6.5-java.gem')
+      end
+    end
+
+    it "creates a ruby module with the artifact name" do
+      within_tmp_directory do |tmp_dir|
+        MavenGem::PomSpec.__send__(:ruby_file_contents, tmp_dir, ant_pom)
+        File.exist?(tmp_dir + '/lib/ant.rb').should be_true
+        lib_file = File.read(tmp_dir + '/lib/ant.rb')
+        lib_file.should include('module Ant')
+      end
+    end
+
+    it "creates a ruby module with the maven version as a constant" do
+      within_tmp_directory do |tmp_dir|
+        MavenGem::PomSpec.__send__(:ruby_file_contents, tmp_dir, hudson_rake_pom)
+        File.exist?(tmp_dir + '/lib/rake.rb').should be_true
+        lib_file = File.read(tmp_dir + '/lib/rake.rb')
+        lib_file.should include("VERSION = '1.7'")
+        lib_file.should include("MAVEN_VERSION = '1.7-SNAPSHOT'")
       end
     end
   end
@@ -158,5 +178,16 @@ describe MavenGem::PomSpec do
 
   def ant_pom
     MavenGem::PomSpec.parse_pom(@pom)
+  end
+
+  def within_tmp_directory
+    tmp_dir = '/tmp/maven_gem_spec'
+    begin
+      FileUtils.mkdir_p(tmp_dir + '/lib')
+
+      yield(tmp_dir)
+    ensure
+      FileUtils.rm_r(tmp_dir)
+    end
   end
 end
