@@ -20,8 +20,12 @@ module MavenGem
           dep_version = xpath_text(dep, 'version')
 
           # TODO: Parse maven version number modifiers, i.e: [1.5,)
-          pom_dependencies << Gem::Dependency.new(maven_to_gem_name(dep_group, dep_artifact),
-                                                  "=#{maven_to_gem_version(dep_version)}")
+          pom_dependencies << if dep_version
+            Gem::Dependency.new(maven_to_gem_name(dep_group, dep_artifact),
+              "=#{maven_to_gem_version(dep_version)}")
+          else
+            Gem::Dependency.new(maven_to_gem_name(dep_group, dep_artifact))
+          end
         end
       end
 

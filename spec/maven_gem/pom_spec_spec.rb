@@ -66,7 +66,15 @@ describe MavenGem::PomSpec do
 
     it "adds dependencies with formatted gem version" do
       pom = pom_with_dependencies
-      pom.dependencies.map {|d| d.version_requirements.as_list }.flatten.should include('= 2.6.2')
+      pom.dependencies.map {|d| d.requirement.as_list }.flatten.should include('= 2.6.2')
+    end
+
+    it "adds dependencies without version" do
+      @pom.gsub(/<optional>true<\/optional>/, '')
+      @pom.gsub(/<(version)>.+<\/$1>/, '')
+      pom_spec = MavenGem::PomSpec.parse_pom(@pom)
+
+      pom_spec.dependencies.each {|d| d.requirement.as_list.should be_empty}
     end
 
     it "doesn't add authors when the node doesn't exist" do
@@ -160,7 +168,7 @@ describe MavenGem::PomSpec do
   end
 
   describe "to_maven_url" do
-    it "creates an artifact jar url from group, arifact and version" do
+    it "creates an artifact jar url from group, artifact and version" do
       MavenGem::PomSpec.to_maven_url('ant', 'ant', '1.6.5').should ==
         "http://mirrors.ibiblio.org/pub/mirrors/maven2/ant/ant/1.6.5/ant-1.6.5.pom"
     end
