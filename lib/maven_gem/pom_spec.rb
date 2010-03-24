@@ -65,7 +65,7 @@ module MavenGem
 
       pom.group = xpath_group(document)
       pom.artifact = xpath_text(document, '/project/artifactId')
-      pom.maven_version = xpath_text(document, '/project/version')
+      pom.maven_version = xpath_text(document, '/project/version') || xpath_text(document, '/project/parent/version')
       pom.version = maven_to_gem_version(pom.maven_version)
       pom.description = xpath_text(document, '/project/description')
       pom.url = xpath_text(document, '/project/url')

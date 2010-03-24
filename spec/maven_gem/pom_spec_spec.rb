@@ -111,6 +111,14 @@ describe MavenGem::PomSpec do
       pom.jar_file.should == 'ant-1.6.6-SNAPSHOT.jar'
       pom.gem_file.should == 'ant.ant-1.6.6-java.gem'
     end
+
+    it "uses the version from the parent when its version doesn't exit" do
+      pom = MavenGem::PomFetcher.fetch(File.join(FIXTURES, 'hudson-rake.pom'))
+      pom_without_version = pom.gsub(/<version>1.7-SNAPSHOT<\/version>/, '')
+
+      pom_spec = MavenGem::PomSpec.parse_pom(pom_without_version)
+      pom_spec.version.should == '1.319'
+    end
   end
 
   describe "generate_spec" do
