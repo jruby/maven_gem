@@ -5,6 +5,7 @@ require 'maven_gem/xml_utils'
 require 'maven_gem/pom_spec'
 require 'maven_gem/pom_fetcher'
 require 'rubygems'
+require 'rubygems/gem_runner'
 
 module MavenGem
   def self.install(group, artifact = nil, version = nil)
