@@ -7,7 +7,7 @@ module MavenGem
     def self.fetch(path, options = {})
       puts "Reading POM from #{path}" if options[:verbose]
 
-      clean_pom(fetch_pom(path, options))
+      fetch_pom(path, options)
     end
 
     def self.clean_pom(pom) #avoid namespaces errors and gotchas

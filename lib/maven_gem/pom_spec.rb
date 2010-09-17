@@ -124,7 +124,7 @@ module MavenGem
     end
 
     def self.create_tmp_directories(pom, options = {})
-      gem_dir = "#{pom.name}.#{$$}"
+      gem_dir = "/tmp/#{pom.name}.#{$$}"
       puts "Using #{gem_dir} work dir" if options[:verbose]
       unless File.exist?(gem_dir)
         FileUtils.mkdir_p(gem_dir)
